@@ -1,424 +1,191 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import {
-  Box,
-  Text,
-  VStack,
-  Spinner,
-  Heading,
-  SimpleGrid,
-  Badge,
-  Flex,
-  Button,
-  Tag,
-  Image,
-  useColorModeValue,
-  Icon,
-  HStack,
-  Divider,
-  Container,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  Stack,
-  LinkBox,
-  LinkOverlay,
-} from "@chakra-ui/react";
-import {
-  MapPin,
-  Phone,
-  Clock,
-  Star,
-  Search,
-  Filter,
-  Globe,
-  ChevronRight,
-  ExternalLink,
-  ShoppingBag,
-  Truck,
-} from "lucide-react";
-
-const RestaurantCard = ({ restaurant }) => {
-  const {
-    name,
-    formatted,
-    // address_line1,
-    address_line2,
-    // categories = [],
-    opening_hours,
-    website,
-    contact,
-    facilities,
-    catering,
-    diet,
-  } = restaurant.properties;
-
-  // Extract cuisine
-  const cuisines = catering?.cuisine?.split(";") || [];
-
-  // Check if delivery is available
-  const hasDelivery = facilities?.delivery === true;
-
-  // Check if outdoor seating is available
-  const hasOutdoorSeating = facilities?.outdoor_seating === true;
-
-  // Check if restaurant is vegetarian or vegan
-  const isVegetarian = diet?.vegetarian === true;
-  const isVegan = diet?.vegan === true;
-
-  // Generate a "fake" rating if not available (for demonstration)
-  const generateRating = () => {
-    const nameHash = name
-      ? name.split("").reduce((a, b) => a + b.charCodeAt(0), 0)
-      : 0;
-    return (3.5 + (nameHash % 15) / 10).toFixed(1);
-  };
-
-  const rating = generateRating();
-
-  // Generate placeholder image URL based on restaurant name
-  const getImageUrl = () => {
-    return `/api/placeholder/600/400`;
-  };
-
-  const cardBg = useColorModeValue("white", "gray.800");
-  const tagColorScheme = useColorModeValue("teal", "cyan");
-
-  return (
-    <LinkBox
-      as="article"
-      overflow="hidden"
-      borderRadius="lg"
-      boxShadow="md"
-      bg={cardBg}
-      transition="all 0.3s"
-      _hover={{ transform: "translateY(-4px)", boxShadow: "xl" }}
-    >
-      <Box position="relative">
-        <Image
-          src={getImageUrl()}
-          alt={name}
-          h="200px"
-          w="full"
-          objectFit="cover"
-        />
-
-        {/* Price level indicator - for demo purposes */}
-        <Tag
-          position="absolute"
-          top="4"
-          right="4"
-          colorScheme="green"
-          size="md"
-          borderRadius="full"
-          px={3}
-          fontWeight="bold"
-        >
-          ₹₹
-        </Tag>
-
-        {/* Delivery badge */}
-        {hasDelivery && (
-          <Tag
-            position="absolute"
-            top="4"
-            left="4"
-            colorScheme="purple"
-            size="md"
-            borderRadius="full"
-            px={3}
-          >
-            <Icon as={Truck} size={16} mr={1} />
-            Delivery
-          </Tag>
-        )}
-      </Box>
-
-      <Box p={5}>
-        <Flex justify="space-between" align="center" mb={2}>
-          <Heading as="h3" size="md" noOfLines={1}>
-            <LinkOverlay href="#">{name || "Unnamed Restaurant"}</LinkOverlay>
-          </Heading>
-
-          <Flex align="center" bg="yellow.50" p={1} borderRadius="md">
-            <Icon as={Star} color="yellow.500" mr={1} />
-            <Text fontWeight="bold">{rating}</Text>
-          </Flex>
-        </Flex>
-
-        <HStack spacing={2} mb={3} flexWrap="wrap">
-          {cuisines.map((cuisine, idx) => (
-            <Badge
-              key={idx}
-              colorScheme={tagColorScheme}
-              textTransform="capitalize"
-              borderRadius="full"
-              px={2}
-              py={0.5}
-            >
-              {cuisine.replace("_", " ")}
-            </Badge>
-          ))}
-
-          {isVegetarian && (
-            <Badge colorScheme="green" borderRadius="full" px={2} py={0.5}>
-              Vegetarian
-            </Badge>
-          )}
-
-          {isVegan && (
-            <Badge colorScheme="green" borderRadius="full" px={2} py={0.5}>
-              Vegan
-            </Badge>
-          )}
-        </HStack>
-
-        <Divider my={3} />
-
-        <VStack align="start" spacing={2}>
-          <Flex align="start">
-            <Icon as={MapPin} size={16} mr={2} mt={1} />
-            <Text fontSize="sm" color="gray.600" noOfLines={2}>
-              {address_line2 || formatted || "Address not available"}
-            </Text>
-          </Flex>
-
-          {opening_hours && (
-            <Flex align="center">
-              <Icon as={Clock} size={16} mr={2} />
-              <Text fontSize="sm" color="gray.600">
-                {opening_hours}
-              </Text>
-            </Flex>
-          )}
-
-          {contact?.phone && (
-            <Flex align="center">
-              <Icon as={Phone} size={16} mr={2} />
-              <Text fontSize="sm" color="gray.600">
-                {contact.phone}
-              </Text>
-            </Flex>
-          )}
-        </VStack>
-
-        <Divider my={3} />
-
-        <Flex justify="space-between" align="center">
-          <HStack>
-            {hasOutdoorSeating && (
-              <Tag size="sm" variant="subtle" colorScheme="blue">
-                Outdoor Seating
-              </Tag>
-            )}
-          </HStack>
-
-          <HStack>
-            {website && (
-              <Button
-                as="a"
-                href={website}
-                target="_blank"
-                size="sm"
-                variant="outline"
-                colorScheme="blue"
-                leftIcon={<ExternalLink size={14} />}
-              >
-                Website
-              </Button>
-            )}
-
-            <Button
-              size="sm"
-              colorScheme="teal"
-              leftIcon={<ShoppingBag size={14} />}
-            >
-              Order Now
-            </Button>
-          </HStack>
-        </Flex>
-      </Box>
-    </LinkBox>
-  );
-};
+import { Container } from "@chakra-ui/react";
+import Header from "./Header";
+import SearchFilters ,{distanceRanges} from "./SearchFilters";
+import ResultsDisplay from "./ResultsDisplay";
+import { calculateDistance } from "../utils/locationUtils";
 
 const NearbyRestaurants = () => {
   const [restaurants, setRestaurants] = useState([]);
+  const [filteredRestaurants, setFilteredRestaurants] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [myCity,setmyCIty]=useState("")
+  const [myCity, setMyCity] = useState("");
+  const [userLocation, setUserLocation] = useState(null);
+  const [distanceFilter, setDistanceFilter] = useState("all");
 
- useEffect(() => {
-   navigator.geolocation.getCurrentPosition(
-     async (position) => {
-       const { latitude, longitude } = position.coords;
-       console.log("User's Location:", latitude, longitude);
+  // Store API key in ref to avoid recreating on every render
+  const apiKey = useRef("5f88948b25dc494fb1d2d37573119bdb");
 
-       try {
-         // Fetch city name using reverse geocoding
-         const geoResponse = await fetch(
-           `https://api.geoapify.com/v1/geocode/reverse?lat=${latitude}&lon=${longitude}&apiKey=5f88948b25dc494fb1d2d37573119bdb`
-         );
-         const geoData = await geoResponse.json();
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        console.log("User's Location:", latitude, longitude);
+        setUserLocation({ latitude, longitude });
 
-         if (geoData.features.length > 0) {
-           const city = geoData.features[0].properties.city || "Unknown City";
-           setmyCIty(city)
-           console.log("City Name:", city);
-         } else {
-           console.log("City name not found");
-         }
+        try {
+          // Fetch city name using reverse geocoding
+          const geoResponse = await fetch(
+            `https://api.geoapify.com/v1/geocode/reverse?lat=${latitude}&lon=${longitude}&apiKey=${apiKey.current}`
+          );
+          const geoData = await geoResponse.json();
 
-         // Fetch restaurants after getting city name
-         fetchRestaurants(latitude, longitude);
-       } catch (error) {
-         console.error("Error fetching city name:", error);
-       }
-     },
-     (err) => {
-       console.error("Geolocation Error:", err);
-       setError("Location access denied. Using a default location.");
-       setLoading(false);
+          if (geoData.features.length > 0) {
+            const city = geoData.features[0].properties.city || "Unknown City";
+            setMyCity(city);
+            console.log("City Name:", city);
+          } else {
+            console.log("City name not found");
+          }
 
-       // Set a fallback location (e.g., Bangalore)
-       fetchRestaurants(12.9716, 77.5946);
-     }
-   );
- }, []);
+          // Fetch restaurants after getting city name
+          // For demonstration, using a fixed location instead of actual location
+          // Change this line to use actual location: fetchRestaurants(latitude, longitude)
+         // fetchRestaurants(28.644800, 77.216721);  ==========================================================================
+          fetchRestaurants(latitude,longitude);
+        } catch (error) {
+          console.error("Error fetching city name:", error);
+          setError("Failed to fetch location data. Please try again.");
+          setLoading(false);
+        }
+      },
+      (err) => {
+        console.error("Geolocation Error:", err);
+        setError("Location access denied. Using a default location.");
+        setLoading(false);
+
+        // Set a fallback location (e.g., Bangalore)
+        const fallbackLat = 12.9716;
+        const fallbackLon = 77.5946;
+        setUserLocation({ latitude: fallbackLat, longitude: fallbackLon });
+        fetchRestaurants(fallbackLat, fallbackLon);
+      }
+    );
+  }, []);
 
   const fetchRestaurants = async (lat, lon) => {
-    const apiKey = "5f88948b25dc494fb1d2d37573119bdb"; // Replace with your actual API key
-    const radius = 1000000; // 5km search radius
+    // This is the maximum radius the API will accept
+    const radius = 50000; // 50km search radius
 
     try {
       const response = await axios.get(
-        `https://api.geoapify.com/v2/places?categories=catering.restaurant,catering.cafe&filter=circle:${lon},${lat},${radius}&bias=proximity:${lon},${lat}&limit=50&apiKey=${apiKey}`
+        `https://api.geoapify.com/v2/places?categories=catering.restaurant,catering.cafe&filter=circle:${lon},${lat},${radius}&bias=proximity:${lon},${lat}&limit=50&apiKey=${apiKey.current}`
       );
 
-      if (response.data.features.length === 0) {
+      if (!response.data || !response.data.features || response.data.features.length === 0) {
+        console.error("No restaurant data found in API response");
         setError("No restaurants found nearby.");
-      } else {
-        setRestaurants(response.data.features);
+        setLoading(false);
+        return;
       }
+
+      console.log(`Found ${response.data.features.length} restaurants from API`);
+      
+      // Add distance to each restaurant
+      const restaurantsWithDistance = response.data.features.map(restaurant => {
+        const resLat = restaurant.properties?.lat;
+        const resLon = restaurant.properties?.lon;
+        
+        // Calculate distance if coordinates are available
+        const distance = calculateDistance(lat, lon, resLat, resLon);
+        
+        return {
+          ...restaurant,
+          properties: {
+            ...restaurant.properties,
+            distance: distance
+          }
+        };
+      });
+
+      // Sort by distance
+      const sortedRestaurants = restaurantsWithDistance.sort((a, b) => {
+        // Handle null distances (put them at the end)
+        if (a.properties.distance === null) return 1;
+        if (b.properties.distance === null) return -1;
+        return a.properties.distance - b.properties.distance;
+      });
+      
+      console.log(`Processed ${sortedRestaurants.length} restaurants with distance data`);
+      
+      setRestaurants(sortedRestaurants);
+      // Initially show all restaurants
+      setFilteredRestaurants(sortedRestaurants);
+      
+      console.log("Restaurant data successfully processed");
     } catch (err) {
-      setError("Failed to fetch restaurants. Please try again later.",err);
+      console.error("Error fetching restaurants:", err);
+      setError(`Failed to fetch restaurants: ${err.message}`);
     } finally {
       setLoading(false);
     }
   };
 
-  // Filter restaurants based on search term
-  const filteredRestaurants = restaurants.filter((restaurant) => {
-    const name = restaurant.properties.name || "";
-    const cuisine = restaurant.properties.catering?.cuisine || "";
+  // Apply both search and distance filters
+  useEffect(() => {
+    if (restaurants.length === 0) return;
+    
+    console.log(`Applying filters: searchTerm=${searchTerm}, distanceFilter=${distanceFilter}`);
+    
+    const filtered = restaurants.filter((restaurant) => {
+      // First filter by search term
+      const name = restaurant.properties?.name || "";
+      const cuisine = restaurant.properties?.catering?.cuisine || "";
+      const matchesSearch = 
+        name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        cuisine.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      if (!matchesSearch) return false;
+      
+      // Then filter by distance
+      if (distanceFilter === "all") return true;
+      
+      const distance = restaurant.properties?.distance;
+      if (distance === null || distance === undefined) return false;
+      
+      const range = distanceRanges[distanceFilter];
+      return distance >= range.min && distance <= range.max;
+    });
+    
+    console.log(`Filter applied: ${filtered.length} restaurants match criteria`);
+    setFilteredRestaurants(filtered);
+  }, [searchTerm, distanceFilter, restaurants]);
 
-    return (
-      name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      cuisine.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  });
+  // Handle distance filter change
+  const handleDistanceChange = (range) => {
+    console.log(`Changing distance filter to: ${range}`);
+    setDistanceFilter(range);
+  };
+
+  // Handle "Near Me" button click
+  const handleNearMe = () => {
+    console.log("Near Me button clicked");
+    setDistanceFilter("0-1");
+  };
 
   return (
     <Container maxW="container.xl" py={8}>
-      <Box mb={8}>
-        <Heading
-          as="h1"
-          size="2xl"
-          mb={2}
-          bgGradient="linear(to-r, teal.400, cyan.600)"
-          bgClip="text"
-        >
-          TastyFinds
-        </Heading>
-        <Text fontSize="xl" color="gray.600">
-          Discover delicious restaurants near you
-        </Text>
-        <Text fontSize="xl" color="gray.600">
-          {` 📍 ${myCity}`}
-        </Text>
-      </Box>
-
-      <Flex
-        direction={{ base: "column", md: "row" }}
-        mb={8}
-        gap={4}
-        justify="space-between"
-        align={{ base: "stretch", md: "center" }}
-      >
-        <InputGroup maxW={{ base: "full", md: "md" }}>
-          <InputLeftElement pointerEvents="none">
-            <Search color="gray.300" />
-          </InputLeftElement>
-          <Input
-            placeholder="Search by restaurant name or cuisine..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            boxShadow="sm"
-          />
-        </InputGroup>
-
-        <HStack spacing={4}>
-          <Button leftIcon={<Filter size={16} />} variant="outline">
-            Filters
-          </Button>
-          <Button colorScheme="teal">Near Me</Button>
-        </HStack>
-      </Flex>
-
-      {loading ? (
-        <Flex justify="center" align="center" h="300px">
-          <Spinner
-            thickness="4px"
-            speed="0.65s"
-            emptyColor="gray.200"
-            color="teal.500"
-            size="xl"
-          />
-        </Flex>
-      ) : error ? (
-        <Box p={5} borderRadius="md" bg="red.50" color="red.600">
-          <Text>{error}</Text>
-        </Box>
-      ) : (
-        <>
-          <Heading size="lg" mb={6}>
-            Restaurants Near You
-          </Heading>
-
-          <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
-            {filteredRestaurants.map((restaurant, index) => (
-              <RestaurantCard key={index} restaurant={restaurant} />
-            ))}
-          </SimpleGrid>
-
-          {filteredRestaurants.length === 0 && (
-            <Flex
-              justify="center"
-              align="center"
-              h="200px"
-              bg="gray.50"
-              borderRadius="md"
-            >
-              <Text>
-                No restaurants match your search. Try a different term.
-              </Text>
-            </Flex>
-          )}
-
-          {filteredRestaurants.length > 0 && (
-            <Flex justify="center" mt={10}>
-              <Button
-                variant="outline"
-                colorScheme="teal"
-                rightIcon={<ChevronRight size={16} />}
-              >
-                Load More
-              </Button>
-            </Flex>
-          )}
-        </>
-      )}
+      <Header cityName={myCity} />
+      
+      <SearchFilters 
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        distanceFilter={distanceFilter}
+        handleDistanceChange={handleDistanceChange}
+        handleNearMe={handleNearMe}
+      />
+      
+      <ResultsDisplay 
+        loading={loading}
+        error={error}
+        restaurants={restaurants}
+        filteredRestaurants={filteredRestaurants}
+        distanceFilter={distanceFilter}
+        setDistanceFilter={setDistanceFilter}
+      />
     </Container>
   );
 };

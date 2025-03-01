@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/SpeechText.css";
 
 function SpeechToText() {
@@ -6,22 +7,17 @@ function SpeechToText() {
   const [text, setText] = useState("");
   const [interimText, setInterimText] = useState("");
   const recognitionRef = useRef(null);
+  const navigate = useNavigate();
 
   const startListening = () => {
     if (isListening) return;
 
-    if (
-      !("webkitSpeechRecognition" in window) &&
-      !("SpeechRecognition" in window)
-    ) {
-      alert(
-        "Speech recognition is not supported in your browser. Try Chrome or Edge."
-      );
+    if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) {
+      alert("Speech recognition is not supported in your browser. Try Chrome or Edge.");
       return;
     }
 
-    const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     recognitionRef.current = new SpeechRecognition();
 
     recognitionRef.current.continuous = true;
@@ -36,7 +32,7 @@ function SpeechToText() {
       let finalTranscript = "";
 
       for (let i = event.resultIndex; i < event.results.length; i++) {
-        const transcript = event.results[i][0].transcript;
+        const transcript = event.results[i][0].transcript.toLowerCase();
         if (event.results[i].isFinal) {
           finalTranscript += transcript + " ";
         } else {
@@ -46,19 +42,15 @@ function SpeechToText() {
 
       setText((prevText) => prevText + finalTranscript);
       setInterimText(interimTranscript);
+
+      // Redirect if phrase detected
+      if (finalTranscript.includes("restaurants near me")) {
+        setTimeout(() => navigate("/nearby-restaurants"), 1000);
+      }
     };
 
     recognitionRef.current.onerror = (event) => {
       console.error("Speech recognition error:", event.error);
-
-      if (event.error === "no-speech") {
-        alert(
-          "No speech detected. Try speaking louder or check your microphone."
-        );
-      } else if (event.error === "not-allowed") {
-        alert("Microphone access denied. Please allow microphone access.");
-      }
-
       stopListening();
     };
 
@@ -78,48 +70,17 @@ function SpeechToText() {
     setInterimText("");
   };
 
-  const clearText = () => {
-    setText("");
-    setInterimText("");
-  };
-
-  const copyToClipboard = () => {
-    navigator.clipboard
-      .writeText(text)
-      .then(() => alert("Text copied to clipboard!"))
-      .catch((err) => console.error("Failed to copy text: ", err));
-  };
-
   return (
     <div className="app-container">
       <h1>Voice to Text Converter</h1>
 
       <div className="controls">
-        <button
-          className={`control-btn ${isListening ? "listening" : ""}`}
-          onClick={isListening ? stopListening : startListening}
-        >
+        <button className={`control-btn ${isListening ? "listening" : ""}`} onClick={isListening ? stopListening : startListening}>
           {isListening ? "Stop Listening" : "Start Listening"}
-        </button>
-        <button
-          className="control-btn"
-          onClick={clearText}
-          disabled={!text && !interimText}
-        >
-          Clear Text
-        </button>
-        <button
-          className="control-btn"
-          onClick={copyToClipboard}
-          disabled={!text}
-        >
-          Copy to Clipboard
         </button>
       </div>
 
-      <div className="status-indicator">
-        {isListening ? "Listening..." : "Not listening"}
-      </div>
+      <div className="status-indicator">{isListening ? "Listening..." : "Not listening"}</div>
 
       <div className="text-output">
         <div className="final-text">{text}</div>
