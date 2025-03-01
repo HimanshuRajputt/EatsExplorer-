@@ -28,7 +28,7 @@ export const distanceRanges = {
   "10+": { label: "10+ km", min: 10000, max: Infinity }
 };
 
-const SearchFilter = ({ 
+const SearchFilters = ({ 
   searchTerm, 
   setSearchTerm, 
   distanceFilter, 
@@ -98,4 +98,4 @@ const SearchFilter = ({
   );
 };
 
-export default SearchFilter;
+export default SearchFilters;
