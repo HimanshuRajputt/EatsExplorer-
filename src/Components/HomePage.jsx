@@ -107,7 +107,7 @@ import { useNavigate } from "react-router-dom";
             py={3}
             fontSize="lg"
             whileHover={{ scale: 1.1 }}
-            onClick={()=>navigate("/nearby-restaurants")}
+            // onClick={()=>navigate("/nearby-restaurants")}
           >
             Start Exploring
           </MotionButton>

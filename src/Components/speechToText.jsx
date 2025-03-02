@@ -1,19 +1,29 @@
-import { useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/SpeechText.css";
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  Text,
+} from "@chakra-ui/react";
 
-function SpeechToText() {
-  const [isListening, setIsListening] = useState(false);
+function SpeechToText({ isOpen, onClose }) {
   const [text, setText] = useState("");
   const [interimText, setInterimText] = useState("");
   const recognitionRef = useRef(null);
   const navigate = useNavigate();
 
-  const startListening = () => {
-    if (isListening) return;
+  useEffect(() => {
+    if (isOpen) startListening();
+    return () => stopListening();
+  }, [isOpen]);
 
+  const startListening = () => {
     if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) {
-      alert("Speech recognition is not supported in your browser. Try Chrome or Edge.");
+      alert("Speech recognition is not supported in your browser.");
       return;
     }
 
@@ -25,7 +35,6 @@ function SpeechToText() {
     recognitionRef.current.lang = "en-US";
 
     recognitionRef.current.start();
-    setIsListening(true);
 
     recognitionRef.current.onresult = (event) => {
       let interimTranscript = "";
@@ -53,12 +62,6 @@ function SpeechToText() {
       console.error("Speech recognition error:", event.error);
       stopListening();
     };
-
-    recognitionRef.current.onend = () => {
-      if (isListening) {
-        setTimeout(() => recognitionRef.current.start(), 500); // Restart after 500ms
-      }
-    };
   };
 
   const stopListening = () => {
@@ -66,27 +69,25 @@ function SpeechToText() {
       recognitionRef.current.stop();
       recognitionRef.current = null;
     }
-    setIsListening(false);
     setInterimText("");
   };
 
   return (
-    <div className="app-container">
-      <h1>Voice to Text Converter</h1>
-
-      <div className="controls">
-        <button className={`control-btn ${isListening ? "listening" : ""}`} onClick={isListening ? stopListening : startListening}>
-          {isListening ? "Stop Listening" : "Start Listening"}
-        </button>
-      </div>
-
-      <div className="status-indicator">{isListening ? "Listening..." : "Not listening"}</div>
-
-      <div className="text-output">
-        <div className="final-text">{text}</div>
-        <div className="interim-text">{interimText}</div>
-      </div>
-    </div>
+    <Modal isOpen={isOpen} onClose={onClose} isCentered motionPreset="slideInBottom">
+      <ModalOverlay backdropFilter="blur(5px)" />
+      <ModalContent p={4} borderRadius="md">
+        <ModalHeader>Voice Command</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <Text fontSize="lg" fontWeight="bold" color="blue.600">
+            {text}
+          </Text>
+          <Text fontSize="md" color="gray.500">
+            {interimText}
+          </Text>
+        </ModalBody>
+      </ModalContent>
+    </Modal>
   );
 }
 

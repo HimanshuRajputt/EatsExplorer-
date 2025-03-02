@@ -45,8 +45,8 @@ const NearbyRestaurants = () => {
           // For demonstration, using a fixed location instead of actual location
           // Change this line to use actual location: fetchRestaurants(latitude, longitude)
         //  fetchRestaurants(28.644800, 77.216721); 
-          // ==========================================================================
-          fetchRestaurants(latitude,longitude);
+          // ======================================================================================================
+         fetchRestaurants(latitude,longitude);
         } catch (error) {
           console.error("Error fetching city name:", error);
           setError("Failed to fetch location data. Please try again.");
@@ -90,7 +90,7 @@ const NearbyRestaurants = () => {
       console.log(
         `Found ${response.data.features.length} restaurants from API`
       );
-
+      // console.log(response.data.features)  *****************************************************
       // Add distance to each restaurant
       const restaurantsWithDistance = response.data.features.map(
         (restaurant) => {
@@ -160,8 +160,8 @@ const NearbyRestaurants = () => {
       const range = distanceRanges[distanceFilter];
       return distance >= range.min && distance <= range.max;
     });
-    
-    console.log(`Filter applied: ${filtered.length} restaurants match criteria`);
+    //console.log(filtered) ********************************************************************************************
+     console.log(`Filter applied: ${filtered.length} restaurants match criteria`);
     setFilteredRestaurants(filtered);
   }, [searchTerm, distanceFilter, restaurants]);
 
