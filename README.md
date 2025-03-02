@@ -4,6 +4,37 @@
 
 🔗 Live Demo: TastyFinds
 
+📁 Project Structure
+
+TastyFinds/
+│── public/
+│── src/
+│   ├── Components/
+│   │   ├── Footer.jsx
+│   │   ├── Header.jsx
+│   │   ├── HomePage.jsx
+│   │   ├── InfoModal.jsx
+│   │   ├── Navbar.jsx
+│   │   ├── NearbyRestaurants.jsx
+│   │   ├── RestaurantCard.jsx
+│   │   ├── ResultsDisplay.jsx
+│   │   ├── SearchFilters.jsx
+│   │   ├── SpeechToText.jsx
+│   ├── assets/
+│   ├── pages/
+│   ├── utils/
+│   ├── App.jsx
+│   ├── index.css
+│   ├── main.jsx
+│── .gitignore
+│── README.md
+│── eslint.config.js
+│── index.html
+│── package-lock.json
+│── package.json
+│── vite.config.js
+
+
 🚀 Key Features
 
 ✅ Find Nearby Restaurants using Geoapify API✅ Filter by Distance for personalized results✅ Beautiful Restaurant Images with Unsplash API✅ Interactive UI using Chakra UI & React.js✅ Email.js Integration for Contact✅ Fully Responsive & Mobile-Friendly
@@ -46,5 +77,8 @@ Feel free to submit issues or pull requests! Contributions are welcome.
 📧 Contact
 
 ✉️ For queries, reach out via Email.js Contact Form
+
+
+
 
 🌟 If you like this project, give it a ⭐ on GitHub!
