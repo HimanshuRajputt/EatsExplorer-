@@ -14,7 +14,7 @@ const Header = ({ cityName }) => {
       align="center"
       justify="center"
       textAlign="center"
-      minH="30vh"  // Adjust height as needed
+      minH="18vh"  
     >
       <Heading
         as="h1"

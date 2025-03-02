@@ -18,7 +18,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 
-// Distance ranges in meters
+
 export const distanceRanges = {
   "all": { label: "All Distances", min: 0, max: Infinity },
   "0-1": { label: "Under 1 km", min: 0, max: 1000 },

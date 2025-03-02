@@ -204,7 +204,7 @@ const DesktopNav = ({ activeComponent, onNavigate }) => {
                 mt={2}
                 zIndex={1}
                 minW="200px"
-                bg={useColorModeValue("white", "gray.800")}
+                bg={("white", "gray.800")}
                 boxShadow="lg"
                 rounded="md"
               >
@@ -215,7 +215,7 @@ const DesktopNav = ({ activeComponent, onNavigate }) => {
                     px={3}
                     borderRadius="md"
                     _hover={{
-                      bg: useColorModeValue("teal.50", "teal.900"),
+                      bg: ("teal.50", "teal.900"),
                       color: linkHoverColor,
                     }}
                     onClick={() => onNavigate(child.key)}

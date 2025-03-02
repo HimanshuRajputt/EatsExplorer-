@@ -22,7 +22,7 @@ const Footer = () => {
     >
       <Container as={Stack} maxW="container.xl" py={10}>
         <SimpleGrid columns={{ base: 1, sm: 2, md: 4 }} spacing={8}>
-          {/* Logo & Copyright */}
+           
           <Stack spacing={6}>
             <Flex align="center">
               <Icon as={FaCoffee} color="teal.500" boxSize={6} mr={2} />
@@ -38,7 +38,6 @@ const Footer = () => {
             <Text fontSize="sm">© 2025 TastyFinds. All rights reserved.</Text>
           </Stack>
 
-          {/* Product Links */}
           <Stack align="flex-start">
             <Text fontWeight="500" fontSize="lg" mb={2}>
               Product
@@ -57,7 +56,7 @@ const Footer = () => {
             </Link>
           </Stack>
 
-          {/* Company Links */}
+           
           <Stack align="flex-start">
             <Text fontWeight="500" fontSize="lg" mb={2}>
               Company
@@ -76,7 +75,6 @@ const Footer = () => {
             </Link>
           </Stack>
 
-          {/* Legal & Social Media */}
           <Stack align="flex-start">
             <Text fontWeight="500" fontSize="lg" mb={2}>
               Legal
@@ -90,8 +88,6 @@ const Footer = () => {
             <Link as={RouterLink} to="/cookie-policy">
               Cookie Policy
             </Link>
-
-            {/* Social Media Icons */}
             <Stack direction="row" spacing={6} mt={4}>
               <IconButton
                 as="a"

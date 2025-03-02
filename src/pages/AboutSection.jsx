@@ -98,14 +98,14 @@ const AboutSection = () => {
 </Heading>
 
 <Flex justify="center">  
-  <Box maxW="800px" w="full"> {/* Box to center everything */}
+  <Box maxW="800px" w="full"> 
     <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} spacing={10} justifyContent="center">
       {[
         { name: "Himanshu Rajput", Role: "Founder/CEO" },
         { name: "Abdul Samad", Role: "CTO" },
         { name: "Omkar Patane", Role: "Director" },
       ].map((member) => (
-        <VStack key={member.name} align="center">  {/* Ensuring items are centered */}
+        <VStack key={member.name} align="center"> 
           <Avatar size="xl" name={member.name} bg="teal.500" color="white" mb={3} />
           <Text fontWeight="bold" fontSize="lg">
             {member.name}

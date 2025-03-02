@@ -5,8 +5,10 @@ import Header from "./Header";
 import SearchFilters ,{distanceRanges} from "./SearchFilters";
 import ResultsDisplay from "./ResultsDisplay";
 import { calculateDistance } from "../utils/locationUtils";
+import InfoModal from "./InfoModal"; 
 
 const NearbyRestaurants = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [restaurants, setRestaurants] = useState([]);
   const [filteredRestaurants, setFilteredRestaurants] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -16,10 +18,10 @@ const NearbyRestaurants = () => {
   // const [userLocation, setUserLocation] = useState(null);
   const [distanceFilter, setDistanceFilter] = useState("all");
 
-  // Store API key in ref to avoid recreating on every render
   const apiKey = "5f88948b25dc494fb1d2d37573119bdb"
 
   useEffect(() => {
+    setIsModalOpen(true);
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
@@ -27,7 +29,7 @@ const NearbyRestaurants = () => {
         // setUserLocation({ latitude, longitude });
 
         try {
-          // Fetch city name using reverse geocoding
+          
           const geoResponse = await fetch(
             `https://api.geoapify.com/v1/geocode/reverse?lat=${latitude}&lon=${longitude}&apiKey=${apiKey}`
           );
@@ -45,7 +47,7 @@ const NearbyRestaurants = () => {
           // For demonstration, using a fixed location instead of actual location
           // Change this line to use actual location: fetchRestaurants(latitude, longitude)
         //  fetchRestaurants(28.644800, 77.216721); 
-          // ======================================================================================================
+          // =========================================================Himanshu Changes=============================================
          fetchRestaurants(latitude,longitude);
         } catch (error) {
           console.error("Error fetching city name:", error);
@@ -68,8 +70,7 @@ const NearbyRestaurants = () => {
   }, []);
 
   const fetchRestaurants = async (lat, lon) => {
-    // This is the maximum radius the API will accept
-    const radius = 50000; // 50km search radius
+    const radius = 50000; // 50km  area
 
     try {
       const response = await axios.get(
@@ -91,13 +92,13 @@ const NearbyRestaurants = () => {
         `Found ${response.data.features.length} restaurants from API`
       );
       // console.log(response.data.features)  *****************************************************
-      // Add distance to each restaurant
+      // Add distance
       const restaurantsWithDistance = response.data.features.map(
         (restaurant) => {
           const resLat = restaurant.properties?.lat;
           const resLon = restaurant.properties?.lon;
 
-          // Calculate distance if coordinates are available
+          // Calculate distance  
           const distance = calculateDistance(lat, lon, resLat, resLon);
 
           return {
@@ -110,9 +111,9 @@ const NearbyRestaurants = () => {
         }
       );
 
-      // Sort by distance
+      // Sort distance
       const sortedRestaurants = restaurantsWithDistance.sort((a, b) => {
-        // Handle null distances (put them at the end)
+        // Handle null distances 
         if (a.properties.distance === null) return 1;
         if (b.properties.distance === null) return -1;
         return a.properties.distance - b.properties.distance;
@@ -123,7 +124,7 @@ const NearbyRestaurants = () => {
       );
 
       setRestaurants(sortedRestaurants);
-      // Initially show all restaurants
+       
       setFilteredRestaurants(sortedRestaurants);
 
       console.log("Restaurant data successfully processed");
@@ -135,14 +136,14 @@ const NearbyRestaurants = () => {
     }
   };
 
-  // Apply both search and distance filters
+   
   useEffect(() => {
     if (restaurants.length === 0) return;
     
     console.log(`Applying filters: searchTerm=${searchTerm}, distanceFilter=${distanceFilter}`);
     
     const filtered = restaurants.filter((restaurant) => {
-      // First filter by search term
+  
       const name = restaurant.properties?.name || "";
       const cuisine = restaurant.properties?.catering?.cuisine || "";
       const matchesSearch = 
@@ -151,7 +152,7 @@ const NearbyRestaurants = () => {
       
       if (!matchesSearch) return false;
       
-      // Then filter by distance
+       
       if (distanceFilter === "all") return true;
       
       const distance = restaurant.properties?.distance;
@@ -160,12 +161,12 @@ const NearbyRestaurants = () => {
       const range = distanceRanges[distanceFilter];
       return distance >= range.min && distance <= range.max;
     });
-    //console.log(filtered) ********************************************************************************************
+    //console.log(filtered) ******************************************Omkar**************************************************
      console.log(`Filter applied: ${filtered.length} restaurants match criteria`);
     setFilteredRestaurants(filtered);
   }, [searchTerm, distanceFilter, restaurants]);
 
-  // Handle distance filter change
+ 
   const handleDistanceChange = (range) => {
     console.log(`Changing distance filter to: ${range}`);
     setDistanceFilter(range);
@@ -178,18 +179,18 @@ const NearbyRestaurants = () => {
   };
 
   return (
-    <Container maxW="container.xl"  marginBottom="300px"  py={8}>
+    <Container maxW="container.xl" marginBottom="300px" py={8}>
       <Header cityName={myCity} />
-      
-      <SearchFilters 
+      <InfoModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <SearchFilters
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
         distanceFilter={distanceFilter}
         handleDistanceChange={handleDistanceChange}
         handleNearMe={handleNearMe}
       />
-      
-      <ResultsDisplay 
+
+      <ResultsDisplay
         loading={loading}
         error={error}
         restaurants={restaurants}

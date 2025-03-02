@@ -19,6 +19,7 @@ function SpeechToText({ isOpen, onClose }) {
   useEffect(() => {
     if (isOpen) startListening();
     return () => stopListening();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
   const startListening = () => {
@@ -52,8 +53,7 @@ function SpeechToText({ isOpen, onClose }) {
       setText((prevText) => prevText + finalTranscript);
       setInterimText(interimTranscript);
 
-      // Redirect if phrase detected
-      if (finalTranscript.includes("restaurants near me")) {
+      if (finalTranscript.includes("restaurant")) {
         setTimeout(() => navigate("/nearby-restaurants"), 1000);
       }
     };
@@ -73,14 +73,19 @@ function SpeechToText({ isOpen, onClose }) {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} isCentered motionPreset="slideInBottom">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      isCentered
+      motionPreset="slideInBottom"
+    >
       <ModalOverlay backdropFilter="blur(5px)" />
       <ModalContent p={4} borderRadius="md">
         <ModalHeader>Voice Command</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <Text fontSize="lg" fontWeight="bold" color="blue.600">
-            {text}
+            {text ? text : "Speak Like Restaurant Near Me"}
           </Text>
           <Text fontSize="md" color="gray.500">
             {interimText}
