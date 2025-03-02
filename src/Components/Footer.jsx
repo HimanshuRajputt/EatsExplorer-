@@ -71,8 +71,8 @@ const Footer = () => {
             <Link as={RouterLink} to="/careers">
               Careers
             </Link>
-            <Link as={RouterLink} to="/press">
-              Press
+            <Link as={RouterLink} to="/">
+              Home
             </Link>
           </Stack>
 
