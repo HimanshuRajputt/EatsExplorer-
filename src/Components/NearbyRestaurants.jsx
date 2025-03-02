@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Container } from "@chakra-ui/react";
 import Header from "./Header";
@@ -13,23 +13,23 @@ const NearbyRestaurants = () => {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [myCity, setMyCity] = useState("");
-  const [userLocation, setUserLocation] = useState(null);
+  // const [userLocation, setUserLocation] = useState(null);
   const [distanceFilter, setDistanceFilter] = useState("all");
 
   // Store API key in ref to avoid recreating on every render
-  const apiKey = useRef("5f88948b25dc494fb1d2d37573119bdb");
+  const apiKey = "5f88948b25dc494fb1d2d37573119bdb"
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
         console.log("User's Location:", latitude, longitude);
-        setUserLocation({ latitude, longitude });
+        // setUserLocation({ latitude, longitude });
 
         try {
           // Fetch city name using reverse geocoding
           const geoResponse = await fetch(
-            `https://api.geoapify.com/v1/geocode/reverse?lat=${latitude}&lon=${longitude}&apiKey=${apiKey.current}`
+            `https://api.geoapify.com/v1/geocode/reverse?lat=${latitude}&lon=${longitude}&apiKey=${apiKey}`
           );
           const geoData = await geoResponse.json();
 
@@ -44,7 +44,8 @@ const NearbyRestaurants = () => {
           // Fetch restaurants after getting city name
           // For demonstration, using a fixed location instead of actual location
           // Change this line to use actual location: fetchRestaurants(latitude, longitude)
-         // fetchRestaurants(28.644800, 77.216721);  ==========================================================================
+        //  fetchRestaurants(28.644800, 77.216721); 
+          // ==========================================================================
           fetchRestaurants(latitude,longitude);
         } catch (error) {
           console.error("Error fetching city name:", error);
@@ -58,10 +59,10 @@ const NearbyRestaurants = () => {
         setLoading(false);
 
         // Set a fallback location (e.g., Bangalore)
-        const fallbackLat = 12.9716;
-        const fallbackLon = 77.5946;
-        setUserLocation({ latitude: fallbackLat, longitude: fallbackLon });
-        fetchRestaurants(fallbackLat, fallbackLon);
+        // const fallbackLat = 12.9716;
+        // const fallbackLon = 77.5946;
+        // setUserLocation({ latitude: fallbackLat, longitude: fallbackLon });
+        // fetchRestaurants(fallbackLat, fallbackLon);
       }
     );
   }, []);
@@ -72,34 +73,42 @@ const NearbyRestaurants = () => {
 
     try {
       const response = await axios.get(
-        `https://api.geoapify.com/v2/places?categories=catering.restaurant,catering.cafe&filter=circle:${lon},${lat},${radius}&bias=proximity:${lon},${lat}&limit=50&apiKey=${apiKey.current}`
+        `https://api.geoapify.com/v2/places?categories=catering.restaurant,catering.cafe&filter=circle:${lon},${lat},${radius}&bias=proximity:${lon},${lat}&limit=50&apiKey=${apiKey}`
       );
 
-      if (!response.data || !response.data.features || response.data.features.length === 0) {
+      if (
+        !response.data ||
+        !response.data.features ||
+        response.data.features.length === 0
+      ) {
         console.error("No restaurant data found in API response");
         setError("No restaurants found nearby.");
         setLoading(false);
         return;
       }
 
-      console.log(`Found ${response.data.features.length} restaurants from API`);
-      
+      console.log(
+        `Found ${response.data.features.length} restaurants from API`
+      );
+
       // Add distance to each restaurant
-      const restaurantsWithDistance = response.data.features.map(restaurant => {
-        const resLat = restaurant.properties?.lat;
-        const resLon = restaurant.properties?.lon;
-        
-        // Calculate distance if coordinates are available
-        const distance = calculateDistance(lat, lon, resLat, resLon);
-        
-        return {
-          ...restaurant,
-          properties: {
-            ...restaurant.properties,
-            distance: distance
-          }
-        };
-      });
+      const restaurantsWithDistance = response.data.features.map(
+        (restaurant) => {
+          const resLat = restaurant.properties?.lat;
+          const resLon = restaurant.properties?.lon;
+
+          // Calculate distance if coordinates are available
+          const distance = calculateDistance(lat, lon, resLat, resLon);
+
+          return {
+            ...restaurant,
+            properties: {
+              ...restaurant.properties,
+              distance: distance,
+            },
+          };
+        }
+      );
 
       // Sort by distance
       const sortedRestaurants = restaurantsWithDistance.sort((a, b) => {
@@ -108,13 +117,15 @@ const NearbyRestaurants = () => {
         if (b.properties.distance === null) return -1;
         return a.properties.distance - b.properties.distance;
       });
-      
-      console.log(`Processed ${sortedRestaurants.length} restaurants with distance data`);
-      
+
+      console.log(
+        `Processed ${sortedRestaurants.length} restaurants with distance data`
+      );
+
       setRestaurants(sortedRestaurants);
       // Initially show all restaurants
       setFilteredRestaurants(sortedRestaurants);
-      
+
       console.log("Restaurant data successfully processed");
     } catch (err) {
       console.error("Error fetching restaurants:", err);
@@ -167,7 +178,7 @@ const NearbyRestaurants = () => {
   };
 
   return (
-    <Container maxW="container.xl" py={8}>
+    <Container maxW="container.xl"  marginBottom="300px"  py={8}>
       <Header cityName={myCity} />
       
       <SearchFilters 

@@ -11,11 +11,11 @@ const Header = ({ cityName }) => {
       <Heading
         as="h1"
         size="2xl"
-        mb={2}
+        mb={4}
         bgGradient="linear(to-r, teal.400, cyan.600)"
         bgClip="text"
       >
-        TastyFinds
+        EatsExplorer
       </Heading>
       <Text fontSize="xl" color="gray.600">
         Discover delicious restaurants near you
